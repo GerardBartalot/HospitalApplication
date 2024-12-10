@@ -47,7 +47,7 @@ fun SearchScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
         TextField(
             value = query,
             onValueChange = { query = it },
-            label = { Text("Buscar enfermero") },
+            label = { Text("Search Nurse") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -59,7 +59,7 @@ fun SearchScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
                         nurse.id.toString() == query
             }
         }) {
-            Text(text = "Buscar")
+            Text(text = "Search")
         }
         Spacer(modifier = Modifier.height(16.dp))
         foundNurse?.let {
@@ -67,7 +67,7 @@ fun SearchScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
         } ?: run {
             if (isSearchPerformed && query.isNotEmpty()) {
                 Text(
-                    text = "Enfermero no encontrado",
+                    text = "Nurse not found.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

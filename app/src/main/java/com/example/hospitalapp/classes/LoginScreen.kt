@@ -71,10 +71,10 @@ fun LoginScreen(
             Button(onClick = {
                 if (users.any { it.first == username && it.second == password }) {
                     loginMessageColor = Color.Green
-                    loginMessage = "Login exitoso"
+                    loginMessage = "Login successful"
                     navController.navigate("search")
                 } else {
-                    loginMessage = "Usuario o contraseña incorrectos"
+                    loginMessage = "Incorrect username or password"
                     loginMessageColor = Color.Red
                 }
             }) {

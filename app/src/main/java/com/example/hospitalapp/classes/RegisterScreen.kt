@@ -28,10 +28,10 @@ class UserViewModel : ViewModel() {
 
     fun registerUser(user: User): String {
         return if (_users.any { it.username == user.username }) {
-            "El usuario ya está registrado"
+            "User already registered"
         } else {
             _users.add(user)
-            "Usuario registrado con éxito"
+            "User successfully registered"
         }
     }
 }
@@ -117,19 +117,19 @@ fun RegisterScreen(
                     address.isNotBlank() && phone.isNotBlank()
                 ) {
                     if (userViewModel.users.any { it.username == username }) {
-                        message = "El usuario ya está registrado"
+                        message = "User already registered"
                         messageColor = Color.Red
                     } else if (userViewModel.users.any { it.password == password }) {
-                        message = "La contraseña ya está en uso"
+                        message = "The password is already in use"
                         messageColor = Color.Red
                     } else {
                         val newUser = User(username, password)
                         userViewModel.registerUser(newUser)
-                        message = "Usuario registrado con éxito"
+                        message = "User successfully registered"
                         messageColor = Color.Green
                     }
                 } else {
-                    message = "Por favor, complete todos los campos"
+                    message = "Please, complete all fields"
                     messageColor = Color.Red
                 }
             }) {

@@ -52,7 +52,7 @@ fun SearchScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth(0.9f)
         ) {
-            Text("Find Nurse by Criteria")
+            Text("Find Nurses by Criteria")
         }
     }
 }
