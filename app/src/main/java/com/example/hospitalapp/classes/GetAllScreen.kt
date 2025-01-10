@@ -19,15 +19,15 @@ import com.example.hospitalapp.ui.theme.HospitalAppTheme
 
 
 
-data class Nurse(val id: Int, val name: String, val username: String,val profilePic : String)
+data class Nurse(val id: Int, val name: String, val username: String,val profilePic : String,val password : String)
 
 
 class CreateNurses {
     val nurses = listOf(
-        Nurse(1, "Nil Arroyo", "ni95_ar","perfil1"),
-        Nurse(2, "Gerard Bartalot", "GeryBar","perfil2"),
-        Nurse(3, "Joan Albert Chias", "Jachias","perfil3"),
-        Nurse(4, "Sergio Arenas", "sejuma","perfil4"),
+        Nurse(1, "Nil Arroyo", "ni95_ar","perfil1","password1"),
+        Nurse(2, "Gerard Bartalot", "GeryBar","perfil2","password2"),
+        Nurse(3, "Joan Albert Chias", "Jachias","perfil3","password3"),
+        Nurse(4, "Sergio Arenas", "sejuma","perfil4","password4"),
     )
 }
 

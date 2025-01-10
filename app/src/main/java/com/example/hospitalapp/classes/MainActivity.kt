@@ -57,6 +57,11 @@ fun AppNavigation() {
             composable("search") {
                 SearchScreen(navController = navController)
             }
+            composable("profile") {
+                ProfileScreen(
+                    createNurses = CreateNurses(),
+                    onBackPressed = { navController.popBackStack() })
+            }
         }
     }
 }

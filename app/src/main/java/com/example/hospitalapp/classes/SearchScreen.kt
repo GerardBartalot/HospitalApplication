@@ -54,6 +54,14 @@ fun SearchScreen(navController: NavHostController) {
         ) {
             Text("Find Nurses by Criteria")
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = { navController.navigate("profile") },
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+        ) {
+            Text("Profile")
+        }
     }
 }
 
