@@ -20,9 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
+/*
 @Composable
-fun SearchScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
+fun SearchScreen(createNurses: RemoteViewModel, onBackPressed: () -> Unit) {
     var query by remember { mutableStateOf("") }
     var foundNurse by remember { mutableStateOf<Nurse?>(null) }
     var isSearchPerformed by remember { mutableStateOf(false) }
@@ -78,10 +78,10 @@ fun SearchScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewFindByNameScreen() {
-    val createNurses = CreateNurses()
+    val createNurses = RemoteViewModel()
 
     SearchScreen(
         createNurses = createNurses,
         onBackPressed = {}
     )
-}
+}*/

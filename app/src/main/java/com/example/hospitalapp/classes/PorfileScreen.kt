@@ -15,9 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 
-
+/*
 @Composable
-fun ProfileScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
+fun ProfileScreen(createNurses: RemoteViewModel, onBackPressed: () -> Unit) {
     val nurse = createNurses.nurses.find { it.id == 1 } ?: return  // Busca el enfermero con id == 2
 
 
@@ -91,6 +91,7 @@ fun ProfileScreen(createNurses: CreateNurses, onBackPressed: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    val createNurses = CreateNurses()
+    val createNurses = RemoteViewModel()
     ProfileScreen(createNurses = createNurses, onBackPressed = {})
 }
+*/

@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.hospitalapp.classes.*
 import com.example.hospitalapp.ui.theme.HospitalAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,24 +43,24 @@ fun AppNavigation() {
             }
             composable("getAll") {
                 NurseApp(
-                    viewModel = CreateNurses(),
+                    remoteViewModel = RemoteViewModel(),
                     onBackPressed = { navController.popBackStack() }
                 )
             }
-            composable("findByName") {
+            /*composable("findByName") {
                 SearchScreen(
-                    createNurses = CreateNurses(),
+                    createNurses = RemoteViewModel(),
                     onBackPressed = { navController.popBackStack() }
                 )
-            }
+            }*/
             composable("search") {
                 SearchScreen(navController = navController)
             }
-            composable("profile") {
+            /*composable("profile") {
                 ProfileScreen(
-                    createNurses = CreateNurses(),
+                    createNurses = RemoteViewModel(),
                     onBackPressed = { navController.popBackStack() })
-            }
+            }*/
         }
     }
 }
