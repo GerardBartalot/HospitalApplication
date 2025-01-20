@@ -47,12 +47,12 @@ fun AppNavigation() {
                     onBackPressed = { navController.popBackStack() }
                 )
             }
-            /*composable("findByName") {
+            composable("findByName") {
                 SearchScreen(
-                    createNurses = RemoteViewModel(),
+                    remoteViewModel = RemoteViewModel(),
                     onBackPressed = { navController.popBackStack() }
                 )
-            }*/
+            }
             composable("search") {
                 SearchScreen(navController = navController)
             }
