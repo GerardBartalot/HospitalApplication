@@ -30,7 +30,7 @@ fun SearchScreen(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit) {
     var foundNurse by remember { mutableStateOf<Nurse?>(null) }
     var isSearchPerformed by remember { mutableStateOf(false) }
 
-    val remoteMessageUiState by remoteViewModel.remoteMessageUiState.collectAsState()
+    val remoteMessageUiState = remoteViewModel.remoteMessageUiState
 
     LaunchedEffect(Unit) {
         remoteViewModel.getAllNurses()

@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-
+    val  remoteViewModel = RemoteViewModel()
     Surface(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = "register") {
             composable("register") {
@@ -43,13 +43,13 @@ fun AppNavigation() {
             }
             composable("getAll") {
                 NurseApp(
-                    remoteViewModel = RemoteViewModel(),
+                    remoteViewModel = remoteViewModel,
                     onBackPressed = { navController.popBackStack() }
                 )
             }
             composable("findByName") {
                 SearchScreen(
-                    remoteViewModel = RemoteViewModel(),
+                    remoteViewModel = remoteViewModel,
                     onBackPressed = { navController.popBackStack() }
                 )
             }

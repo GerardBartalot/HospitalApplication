@@ -1,6 +1,9 @@
 package com.example.hospitalapp.classes
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,14 +25,16 @@ interface RemoteNurseInterface {
     suspend fun getAllNurses(): List<Nurse>
 }
 
-class RemoteViewModel : ViewModel() {
+class RemoteViewModel:ViewModel() {
 
-    private val _remoteMessageUiState = MutableStateFlow<RemoteMessageUiState>(RemoteMessageUiState.Loading)
-    val remoteMessageUiState: StateFlow<RemoteMessageUiState> = _remoteMessageUiState
+ //   private val _remoteMessageUiState = MutableStateFlow<RemoteMessageUiState>(RemoteMessageUiState.Loading)
+ //   val remoteMessageUiState: StateFlow<RemoteMessageUiState> = _remoteMessageUiState
+    var remoteMessageUiState:RemoteMessageUiState by mutableStateOf(RemoteMessageUiState.Loading)
+    private set
 
     fun getAllNurses() {
         viewModelScope.launch {
-            _remoteMessageUiState.value = RemoteMessageUiState.Loading
+            remoteMessageUiState = RemoteMessageUiState.Loading
             try {
                 Log.d("RemoteViewModel", "Iniciando conexión Retrofit con base URL: http://10.0.2.2:8080")
                 val connection = Retrofit.Builder()
@@ -38,11 +43,11 @@ class RemoteViewModel : ViewModel() {
                     .build()
                 val endpoint = connection.create(RemoteNurseInterface::class.java)
                 val response = endpoint.getAllNurses()
+                remoteMessageUiState = RemoteMessageUiState.Success(response)
                 Log.d("RemoteViewModel", "Datos recibidos: $response")
-                _remoteMessageUiState.value = RemoteMessageUiState.Success(response)
             } catch (e: Exception) {
                 Log.e("RemoteViewModel", "Error en la conexión o procesamiento: ${e.message}", e)
-                _remoteMessageUiState.value = RemoteMessageUiState.Error
+                remoteMessageUiState = RemoteMessageUiState.Error
             }
         }
     }

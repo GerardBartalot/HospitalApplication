@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun NurseApp(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit) {
     //val state = viewModel.remoteMessageUiState
-    val remoteMessageUiState by remoteViewModel.remoteMessageUiState.collectAsState()
+    val remoteMessageUiState = remoteViewModel.remoteMessageUiState
 
     LaunchedEffect(Unit) {
         remoteViewModel.getAllNurses()
@@ -46,7 +46,7 @@ fun NurseApp(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit) {
                 }
                 is RemoteMessageUiState.Success -> {
                     Log.d("RemoteViewModel", "entra success")
-                    NurseList(nurses = (remoteMessageUiState as RemoteMessageUiState.Success).remoteMessage)
+                    NurseList(nurses = remoteMessageUiState.remoteMessage)
                 }
                 is RemoteMessageUiState.Error -> {
                     Text(
