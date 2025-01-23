@@ -36,11 +36,17 @@ fun AppNavigation() {
                 )
             }
             composable("login") {
-                LoginScreen(
-                    navController = navController,
-                    onBackPressed = { navController.popBackStack() }
-                )
-            }
+            LoginScreen(
+                remoteViewModel = remoteViewModel,
+                onBackPressed = { navController.popBackStack() },
+                onNavigateToRegister = {
+                    navController.navigate("register")
+                },
+                onNavigateToSearch = {
+                    navController.navigate("search")
+                }
+            )
+        }
             composable("getAll") {
                 NurseApp(
                     remoteViewModel = remoteViewModel,
