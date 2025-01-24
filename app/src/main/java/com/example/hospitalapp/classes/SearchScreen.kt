@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
+fun SearchScreen(navController: NavHostController, nurse_id: Int) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,7 +56,7 @@ fun SearchScreen(navController: NavHostController) {
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            onClick = { navController.navigate("profile") },
+            onClick = { navController.navigate("profile/$nurse_id") },
             modifier = Modifier
                 .fillMaxWidth(0.9f)
         ) {
@@ -65,13 +65,4 @@ fun SearchScreen(navController: NavHostController) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewSearchScreen() {
-    val navController = rememberNavController()
-
-    SearchScreen(
-        navController = navController
-    )
-}
 

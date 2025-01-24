@@ -15,11 +15,10 @@ fun LoginScreen(
     remoteViewModel: RemoteViewModel,
     onBackPressed: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    onNavigateToSearch: () -> Unit
+    onNavigateToSearch: (Int) -> Unit
 ) {
     val loginMessageUiState = remoteViewModel.loginMessageUiState
-    var hasNavigated by remember { mutableStateOf(false) } // Controla la navegación única.
-
+    var hasNavigated by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -59,8 +58,15 @@ fun LoginScreen(
             Button(onClick = {
                 remoteViewModel.loginUser(username, password) { resultMessage ->
                     if (resultMessage == "Login exitoso") {
-                        Log.d("LoginScreen", "Login exitoso, navegando a SearchScreen")
-                        onNavigateToSearch()
+                        val nurseId = remoteViewModel.loginMessageUiState.let {
+                            if (it is LoginMessageUiState.Success) it.loginMessage?.nurse_id
+                            else null
+                        }
+                        if (nurseId != null && !hasNavigated) {
+                            Log.d("LoginScreen", "Login exitoso, navegando a SearchScreen con nurse_id: $nurseId")
+                            hasNavigated = true // Evita la navegación repetida
+                            onNavigateToSearch(nurseId)
+                        }
                     } else {
                         Log.e("LoginScreen", "Error en login: $resultMessage")
                     }
@@ -70,17 +76,13 @@ fun LoginScreen(
             }
 
             Spacer(modifier = Modifier.height(25.dp))
+
             when (loginMessageUiState) {
                 is LoginMessageUiState.Loading -> {
-
+                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 }
                 is LoginMessageUiState.Success -> {
-                    if (!hasNavigated) {
-                        Text("Login successful", color = Color.Green)
-                        Log.d("LoginScreen", "Inicio de sesión exitoso")
-                        hasNavigated = true
-                        onNavigateToSearch() // Solo se navega una vez.
-                    }
+                    Text("Login successful", color = Color.Green)
                 }
                 is LoginMessageUiState.Error -> {
                     Text("Incorrect username or password", color = Color.Red)
@@ -101,3 +103,4 @@ fun LoginScreen(
         }
     }
 }
+

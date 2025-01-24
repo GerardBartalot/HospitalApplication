@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -18,7 +16,6 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 
-// UI State Sealed Interfaces
 sealed interface RemoteMessageUiState {
     data class Success(val remoteMessage: List<Nurse>) : RemoteMessageUiState
     object Loading : RemoteMessageUiState
@@ -26,7 +23,7 @@ sealed interface RemoteMessageUiState {
 }
 
 sealed interface LoginMessageUiState {
-    data class Success(val loginMessage: User?) : LoginMessageUiState
+    data class Success(val loginMessage: Nurse?) : LoginMessageUiState
     object Loading : LoginMessageUiState
     object Error : LoginMessageUiState
 }
@@ -41,10 +38,10 @@ interface RemoteNurseInterface {
     suspend fun loginUser(
         @Field("username") username: String,
         @Field("password") password: String
-    ): Response<User>
+    ): Response<Nurse>
 
     @POST("/nurse/create")
-    suspend fun registerUser(@Body user: User): Response<User>
+    suspend fun registerUser(@Body nurse: Nurse): Response<Nurse>
 }
 
 // ViewModel
@@ -108,10 +105,10 @@ class RemoteViewModel : ViewModel() {
         }
     }
 
-    fun registerUser(user: User, onResult: (Boolean) -> Unit) {
+    fun registerUser(nurse: Nurse, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             try {
-                val response = endpoint.registerUser(user)
+                val response = endpoint.registerUser(nurse)
                 onResult(response.isSuccessful)
             } catch (e: Exception) {
                 Log.e("RemoteViewModel", "Error en el registro: ${e.message}", e)
@@ -120,3 +117,4 @@ class RemoteViewModel : ViewModel() {
         }
     }
 }
+
