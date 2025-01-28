@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoginScreen(
     remoteViewModel: RemoteViewModel,
-    onBackPressed: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToSearch: (Int) -> Unit
 ) {
@@ -23,12 +22,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Button(
-            onClick = onBackPressed,
-            modifier = Modifier.align(Alignment.TopStart).padding(16.dp)
-        ) {
-            Text("Back")
-        }
+
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -79,7 +73,6 @@ fun LoginScreen(
 
             when (loginMessageUiState) {
                 is LoginMessageUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.padding(16.dp))
                 }
                 is LoginMessageUiState.Success -> {
                     Text("Login successful", color = Color.Green)

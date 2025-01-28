@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -26,6 +28,11 @@ sealed interface LoginMessageUiState {
     data class Success(val loginMessage: Nurse?) : LoginMessageUiState
     object Loading : LoginMessageUiState
     object Error : LoginMessageUiState
+}
+sealed interface RegisterMessageUiState {
+    data class Success(val nurse: Nurse?) : RegisterMessageUiState
+    object Loading : RegisterMessageUiState
+    object Error : RegisterMessageUiState
 }
 
 // Retrofit Interfaces
@@ -52,6 +59,8 @@ class RemoteViewModel : ViewModel() {
         private set
     var loginMessageUiState: LoginMessageUiState by mutableStateOf(LoginMessageUiState.Loading)
         private set
+    private val _registerMessageUiState = MutableStateFlow<RegisterMessageUiState>(RegisterMessageUiState.Loading)
+    val registerMessageUiState: StateFlow<RegisterMessageUiState> = _registerMessageUiState
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
@@ -105,14 +114,43 @@ class RemoteViewModel : ViewModel() {
         }
     }
 
-    fun registerUser(nurse: Nurse, onResult: (Boolean) -> Unit) {
+    fun registerUser(nurse: Nurse, onResult: (String) -> Unit) {
         viewModelScope.launch {
+            _registerMessageUiState.value = RegisterMessageUiState.Loading
             try {
+                Log.d("RemoteViewModel", "Intentando registrar usuario: ${nurse.username}")
+
+                val connection = Retrofit.Builder()
+                    .baseUrl("http://10.0.2.2:8080")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                val endpoint = connection.create(RemoteNurseInterface::class.java)
                 val response = endpoint.registerUser(nurse)
-                onResult(response.isSuccessful)
+
+                Log.d("RemoteViewModel", "Código de respuesta: ${response.code()}")
+                Log.d("RemoteViewModel", "Mensaje de respuesta: ${response.message()}")
+
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    if (responseBody != null) {
+                        _registerMessageUiState.value = RegisterMessageUiState.Success(responseBody)
+                        Log.d("RemoteViewModel", "Registro exitoso para usuario: ${nurse.username}")
+                        onResult("Registro exitoso")
+                    } else {
+                        _registerMessageUiState.value = RegisterMessageUiState.Error
+                        Log.e("RemoteViewModel", "Registro fallido: respuesta vacía")
+                        onResult("Error: Datos no recibidos")
+                    }
+                } else {
+                    _registerMessageUiState.value = RegisterMessageUiState.Error
+                    val errorMessage = response.errorBody()?.string() ?: "Error desconocido"
+                    Log.e("RemoteViewModel", "Error en registro: $errorMessage")
+                    onResult("Error: $errorMessage")
+                }
             } catch (e: Exception) {
-                Log.e("RemoteViewModel", "Error en el registro: ${e.message}", e)
-                onResult(false)
+                _registerMessageUiState.value = RegisterMessageUiState.Error
+                Log.e("RemoteViewModel", "Excepción durante el registro: ${e.localizedMessage}", e)
+                onResult("Error: Problema de conexión")
             }
         }
     }

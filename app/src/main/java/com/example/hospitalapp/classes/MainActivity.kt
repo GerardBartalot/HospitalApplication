@@ -29,17 +29,16 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation(remoteViewModel: RemoteViewModel) {
     val navController = rememberNavController()
     Surface(modifier = Modifier.fillMaxSize()) {
-        NavHost(navController = navController, startDestination = "register") {
+        NavHost(navController = navController, startDestination = "login") {
             composable("register") {
                 RegisterScreen(
-                    onBackPressed = {},
+                    remoteViewModel = remoteViewModel,
                     onNavigateToLogin = { navController.navigate("login") }
                 )
             }
             composable("login") {
                 LoginScreen(
                     remoteViewModel = remoteViewModel,
-                    onBackPressed = { navController.popBackStack() },
                     onNavigateToRegister = {
                         navController.navigate("register")
                     },

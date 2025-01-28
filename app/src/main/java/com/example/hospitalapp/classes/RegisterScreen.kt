@@ -1,5 +1,6 @@
 package com.example.hospitalapp.classes
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -7,49 +8,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
-data class User(
-    val username: String,
-    val password: String,
-)
 
-class UserViewModel : ViewModel() {
-    private val _users = mutableStateListOf(
-        User("ni95_ar", "password1"),
-        User("GeryBar", "password2"),
-        User("Jachias", "password3"),
-        User("sejuma", "password4"),
-    )
-    val users: List<User> get() = _users
-
-    fun registerUser(user: User): String {
-        return if (_users.any { it.username == user.username }) {
-            "User already registered"
-        } else {
-            _users.add(user)
-            "User successfully registered"
-        }
-    }
-}
 
 @Composable
 fun RegisterScreen(
-    onBackPressed: () -> Unit,
-    onNavigateToLogin: () -> Unit,
-    userViewModel: UserViewModel = viewModel()
+    remoteViewModel: RemoteViewModel,
+    onNavigateToLogin: () -> Unit
 ) {
+
+    val registerMessageUiState by remoteViewModel.registerMessageUiState.collectAsState()
+
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
-    var messageColor by remember { mutableStateOf(Color.Transparent) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -112,38 +88,33 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(onClick = {
-                if (username.isNotBlank() && password.isNotBlank() &&
-                    name.isNotBlank() && surname.isNotBlank() &&
-                    address.isNotBlank() && phone.isNotBlank()
-                ) {
-                    if (userViewModel.users.any { it.username == username }) {
-                        message = "User already registered"
-                        messageColor = Color.Red
-                    } else if (userViewModel.users.any { it.password == password }) {
-                        message = "The password is already in use"
-                        messageColor = Color.Red
+                Log.d("RegisterScreen", "Botón de registro presionado")
+                Log.d("RegisterScreen", "Datos a enviar: username=${username}, password=${password}, name=${name}")
+                Log.d("RegisterScreen", "Intentando registrar usuario con: $username")
+                val nurse = Nurse(nurse_id = 0, name = name, username = username, password = password)
+                remoteViewModel.registerUser(nurse) { resultMessage ->
+                    Log.d("RegisterScreen", "Respuesta de registro: $resultMessage")
+                    if (resultMessage == "Registro exitoso") {
+                        onNavigateToLogin()
                     } else {
-                        val newUser = User(username, password)
-                        userViewModel.registerUser(newUser)
-                        message = "User successfully registered"
-                        messageColor = Color.Green
+                        Log.e("RegisterScreen", "Error en el registro: $resultMessage")
                     }
-                } else {
-                    message = "Please, complete all fields"
-                    messageColor = Color.Red
                 }
             }) {
                 Text("Register")
             }
 
-            if (message.isNotEmpty()) {
-                Text(
-                    text = message,
-                    color = messageColor,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+            Spacer(modifier = Modifier.height(25.dp))
+            when (registerMessageUiState) {
+                is RegisterMessageUiState.Loading -> {
+                }
+                is RegisterMessageUiState.Success -> {
+                    Text("User successfully registered", color = Color.Green)
+                }
+                is RegisterMessageUiState.Error -> {
+                    Text("User is already registered", color = Color.Red)
+                }
             }
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
@@ -162,13 +133,4 @@ fun RegisterScreen(
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RegisterScreenPreview() {
-    RegisterScreen(
-        onBackPressed = {},
-        onNavigateToLogin = {}
-    )
 }
