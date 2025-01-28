@@ -15,20 +15,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
-fun ProfileScreen(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit, nurseId: Int) {
+fun ProfileScreen(
+    remoteViewModel: RemoteViewModel,
+    onBackPressed: () -> Unit,
+    nurseId: Int,
+    onDelete: (Int) -> Unit,
+    navController: NavController
+) {
     val remoteMessageUiState = remoteViewModel.remoteMessageUiState
     var foundNurse by remember { mutableStateOf<Nurse?>(null) }
     var isSearchPerformed by remember { mutableStateOf(false) }
 
-    // Solo ejecutar la búsqueda cuando el estado de la UI haya cambiado
+    var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var updateMessage by remember { mutableStateOf("") }
+
     LaunchedEffect(remoteMessageUiState) {
         if (remoteMessageUiState is RemoteMessageUiState.Success && !isSearchPerformed) {
             foundNurse = remoteMessageUiState.remoteMessage.find { it.nurse_id == nurseId }
             isSearchPerformed = true
+            foundNurse?.let {
+                name = it.name ?: ""
+                username = it.username ?: ""
+                password = it.password ?: ""
+            }
         }
     }
 
@@ -69,26 +84,27 @@ fun ProfileScreen(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit, n
                 )
             }
             is RemoteMessageUiState.Success -> {
-                foundNurse?.let { nurse ->
+                if (foundNurse != null) {
+                    val nurse = foundNurse!!
                     TextField(
-                        value = nurse.name,
-                        onValueChange = {},
+                        value = name,
+                        onValueChange = { name = it },
                         label = { Text("Name") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
-                        value = nurse.username,
-                        onValueChange = {},
+                        value = username,
+                        onValueChange = { username = it },
                         label = { Text("Username") },
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     TextField(
-                        value = nurse.password,
-                        onValueChange = {},
+                        value = password,
+                        onValueChange = { password = it },
                         label = { Text("Password") },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -99,14 +115,56 @@ fun ProfileScreen(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit, n
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Button(onClick = { /* TODO: Implement update logic */ }) {
+                        Button(onClick = {
+                            val updatedNurse = Nurse(
+                                nurse_id = nurseId,
+                                name = name,
+                                username = username,
+                                password = password
+                            )
+                            remoteViewModel.updateNurse(
+                                updatedNurse,
+                                onSuccess = {
+                                    Log.d("ProfileScreen", "Nurse actualizado con éxito")
+                                    updateMessage = "Usuario actualizado con éxito"
+                                },
+                                onError = { errorMessage ->
+                                    Log.e("ProfileScreen", "Error al actualizar el usuario: $errorMessage")
+                                    updateMessage = "Error al actualizar: $errorMessage"
+                                }
+                            )
+                        }) {
                             Text("Update")
                         }
-                        Button(onClick = { /* TODO: Implement delete logic */ }) {
+                        Button(onClick = {
+                            remoteViewModel.deleteNurse(
+                                nurseId,
+                                onSuccess = {
+                                    Log.d("ProfileScreen", "Nurse eliminado con éxito")
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = false }
+                                    }
+                                },
+                                onError = { errorMessage ->
+                                    Log.e("ProfileScreen", "Error al eliminar el usuario: $errorMessage")
+                                }
+                            )
+                        }) {
                             Text("Delete")
                         }
                     }
-                } ?: run {
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (updateMessage.isNotEmpty()) {
+                        Text(
+                            text = updateMessage,
+                            color = if (updateMessage.contains("Error")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                    }
+                } else {
                     Text(
                         text = "Nurse not found.",
                         style = MaterialTheme.typography.bodyMedium,
@@ -117,4 +175,3 @@ fun ProfileScreen(remoteViewModel: RemoteViewModel, onBackPressed: () -> Unit, n
         }
     }
 }
-

@@ -55,21 +55,45 @@ fun AppNavigation(remoteViewModel: RemoteViewModel) {
             }
             composable("findByName") {
                 SearchScreen(
-                    remoteViewModel = remoteViewModel,   onBackPressed = { navController.popBackStack() }
+                    remoteViewModel = remoteViewModel,
+                    onBackPressed = { navController.popBackStack() }
                 )
             }
             composable("search/{nurseId}") { backStackEntry ->
-                val nurseId = backStackEntry.arguments?.getString("nurseId")?.toInt() ?: 0
-                SearchScreen(navController = navController, nurse_id = nurseId)
+                val nurseId = backStackEntry.arguments?.getString("nurseId")?.toIntOrNull()
+                if (nurseId != null) {
+                    SearchScreen(navController = navController, nurse_id = nurseId)
+                } else {
+                    Log.e("AppNavigation", "Invalid nurseId passed to search screen")
+                }
             }
             composable("profile/{nurseId}") { backStackEntry ->
-                val nurseId = backStackEntry.arguments?.getString("nurseId")?.toInt() ?: 0
-                ProfileScreen(
-                    remoteViewModel = remoteViewModel,
-                    onBackPressed = { navController.popBackStack() },
-                    nurseId = nurseId
-                )
+                val nurseId = backStackEntry.arguments?.getString("nurseId")?.toIntOrNull()
+                if (nurseId != null) {
+                    ProfileScreen(
+                        remoteViewModel = remoteViewModel,
+                        onBackPressed = { navController.popBackStack() },
+                        nurseId = nurseId, // Cambiado para consistencia
+                        onDelete = { id ->
+                            remoteViewModel.deleteNurse(
+                                id = id,
+                                onSuccess = {
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = false }
+                                    }
+                                },
+                                onError = { errorMessage ->
+                                    Log.e("AppNavigation", "Error al eliminar el usuario: $errorMessage")
+                                }
+                            )
+                        },
+                        navController = navController
+                    )
+                } else {
+                    Log.e("AppNavigation", "Invalid nurseId passed to profile screen")
+                }
             }
+
         }
     }
 }
