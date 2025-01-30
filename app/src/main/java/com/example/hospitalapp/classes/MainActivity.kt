@@ -73,7 +73,7 @@ fun AppNavigation(remoteViewModel: RemoteViewModel) {
                     ProfileScreen(
                         remoteViewModel = remoteViewModel,
                         onBackPressed = { navController.popBackStack() },
-                        nurseId = nurseId, // Cambiado para consistencia
+                        nurseId = nurseId,
                         onDelete = { id ->
                             remoteViewModel.deleteNurse(
                                 id = id,
